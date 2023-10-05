@@ -161,6 +161,9 @@ public class OrmTest {
         var course1 = courseDao.create("Bazy");
         var course2 = courseDao.create("Bazy 2");
 
+        boolean studentEnrolled = courseDao.enrollStudent(course1.get(), student.get());
+        boolean reundantStudentEnroll = courseDao.enrollStudent(course2.get(), student.get());
+
         gradeDao.gradeStudent(student.get(), course1.get(), 5.0f);
         gradeDao.gradeStudent(student.get(), course1.get(), 4.0f);
         gradeDao.gradeStudent(student.get(), course2.get(), 5.0f);

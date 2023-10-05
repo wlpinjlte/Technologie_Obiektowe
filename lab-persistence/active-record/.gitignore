@@ -1,7 +1,5 @@
 .gradle/
 .idea/
 build/
-gradlew
-gradlew.bat
 active_record.db
 active_record_test.db
