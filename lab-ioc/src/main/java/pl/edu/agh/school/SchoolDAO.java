@@ -1,9 +1,12 @@
 package pl.edu.agh.school;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import pl.edu.agh.logger.Logger;
+import pl.edu.agh.school.persistence.Assembler;
+import pl.edu.agh.school.persistence.PersistenceConfig;
 import pl.edu.agh.school.persistence.SerializablePersistenceManager;
 
 public class SchoolDAO {
@@ -14,18 +17,24 @@ public class SchoolDAO {
 
     private final List<SchoolClass> classes;
 
-    private final SerializablePersistenceManager manager;
+    private final SerializablePersistenceManager teacherManager;
+    private final SerializablePersistenceManager classManager;
 
     public SchoolDAO() {
-        manager = new SerializablePersistenceManager();
-        teachers = manager.loadTeachers();
-        classes = manager.loadClasses();
+        PersistenceConfig teachersConfig=new PersistenceConfig("teachers.dat");
+        PersistenceConfig classConfig=new PersistenceConfig("classes.dat");
+        Assembler assembler=Assembler.createAssembler(teachersConfig);
+        teacherManager = assembler.getInstance(SerializablePersistenceManager.class);
+        teachers = (List<Teacher>) (List<?>)teacherManager.load();
+        assembler.setConfiguration(classConfig);
+        classManager = assembler.getInstance(SerializablePersistenceManager.class);
+        classes = (List<SchoolClass>) (List<?>)classManager.load();
     }
 
     public void addTeacher(Teacher teacher) {
         if (!teachers.contains(teacher)) {
             teachers.add(teacher);
-            manager.saveTeachers(teachers);
+            teacherManager.save((List<Serializable>) (List<?>)teachers);
             log.log("Added " + teacher.toString());
         }
     }
@@ -33,7 +42,7 @@ public class SchoolDAO {
     public void addClass(SchoolClass newClass) {
         if (!classes.contains(newClass)) {
             classes.add(newClass);
-            manager.saveClasses(classes);
+            classManager.save((List<Serializable>) (List<?>)classes);
             log.log("Added " + newClass.toString());
         }
     }
