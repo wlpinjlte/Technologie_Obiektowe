@@ -5,34 +5,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.agh.logger.Logger;
+import pl.edu.agh.school.SchoolClass;
+import pl.edu.agh.school.Teacher;
+
 public final class SerializablePersistenceManager implements SerialzablePersistenceInterface{
 
     private static final Logger log = Logger.getInstance();
-    private String storageFileName;
 
-    public SerializablePersistenceManager(String storageFileName) {
-        this.storageFileName=storageFileName;
+    private final String teachersStorageFileName;
+
+    private final String classStorageFileName;
+
+    public SerializablePersistenceManager(String classStorageFileName,String teachersStorageFileName) {
+        this.teachersStorageFileName = teachersStorageFileName;
+        this.classStorageFileName = classStorageFileName;
     }
 
-    @Override
-    public void save(List<Serializable> list) {
-        if (list == null) {
+    public void saveTeachers(List<Teacher> teachers) {
+        if (teachers == null) {
             throw new IllegalArgumentException();
         }
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(storageFileName))) {
-            oos.writeObject(list);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(teachersStorageFileName))) {
+            oos.writeObject(teachers);
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IOException e) {
+            log.log("There was an error while saving the teachers data", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Teacher> loadTeachers() {
+        ArrayList<Teacher> res = null;
+        try (ObjectInputStream ios = new ObjectInputStream(new FileInputStream(teachersStorageFileName))) {
+
+            res = (ArrayList<Teacher>) ios.readObject();
+        } catch (FileNotFoundException e) {
+            res = new ArrayList<>();
+        } catch (IOException e) {
+            log.log("There was an error while loading the teachers data", e);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return res;
+    }
+
+    public void saveClasses(List<SchoolClass> classes) {
+        if (classes == null) {
+            throw new IllegalArgumentException();
+        }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(classStorageFileName))) {
+
+            oos.writeObject(classes);
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         } catch (IOException e) {
             log.log("There was an error while saving the classes data", e);
         }
     }
+
     @SuppressWarnings("unchecked")
-    @Override
-    public List<Serializable> load() {
-        ArrayList<Serializable> res = null;
-        try (ObjectInputStream ios = new ObjectInputStream(new FileInputStream(storageFileName))) {
-            res = (ArrayList<Serializable>) ios.readObject();
+    public List<SchoolClass> loadClasses() {
+        ArrayList<SchoolClass> res = null;
+        try (ObjectInputStream ios = new ObjectInputStream(new FileInputStream(classStorageFileName))) {
+            res = (ArrayList<SchoolClass>) ios.readObject();
         } catch (FileNotFoundException e) {
             res = new ArrayList<>();
         } catch (IOException e) {

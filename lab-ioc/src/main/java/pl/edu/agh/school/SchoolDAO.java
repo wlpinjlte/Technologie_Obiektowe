@@ -1,6 +1,5 @@
 package pl.edu.agh.school;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,24 +16,20 @@ public class SchoolDAO {
 
     private final List<SchoolClass> classes;
 
-    private final SerializablePersistenceManager teacherManager;
-    private final SerializablePersistenceManager classManager;
+    private final SerializablePersistenceManager manager;
 
     public SchoolDAO() {
-        PersistenceConfig teachersConfig=new PersistenceConfig("teachers.dat");
-        PersistenceConfig classConfig=new PersistenceConfig("classes.dat");
-        Assembler assembler=Assembler.createAssembler(teachersConfig);
-        teacherManager = assembler.getInstance(SerializablePersistenceManager.class);
-        teachers = (List<Teacher>) (List<?>)teacherManager.load();
-        assembler.setConfiguration(classConfig);
-        classManager = assembler.getInstance(SerializablePersistenceManager.class);
-        classes = (List<SchoolClass>) (List<?>)classManager.load();
+        Assembler assembler=Assembler.createAssembler(new PersistenceConfig());
+        manager = assembler.getInstance(SerializablePersistenceManager.class);
+//        manager=null;
+        teachers = manager.loadTeachers();
+        classes = manager.loadClasses();
     }
 
     public void addTeacher(Teacher teacher) {
         if (!teachers.contains(teacher)) {
             teachers.add(teacher);
-            teacherManager.save((List<Serializable>) (List<?>)teachers);
+            manager.saveTeachers(teachers);
             log.log("Added " + teacher.toString());
         }
     }
@@ -42,7 +37,7 @@ public class SchoolDAO {
     public void addClass(SchoolClass newClass) {
         if (!classes.contains(newClass)) {
             classes.add(newClass);
-            classManager.save((List<Serializable>) (List<?>)classes);
+            manager.saveClasses(classes);
             log.log("Added " + newClass.toString());
         }
     }
