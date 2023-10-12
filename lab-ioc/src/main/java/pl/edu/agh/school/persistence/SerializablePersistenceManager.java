@@ -3,7 +3,10 @@ package pl.edu.agh.school.persistence;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+//import
+import javax.inject.Named;
 
+import com.google.inject.Inject;
 import pl.edu.agh.logger.Logger;
 import pl.edu.agh.school.SchoolClass;
 import pl.edu.agh.school.Teacher;
@@ -11,11 +14,14 @@ import pl.edu.agh.school.Teacher;
 public final class SerializablePersistenceManager implements SerialzablePersistenceInterface{
 
     private static final Logger log = Logger.getInstance();
-
+    @Inject
+    @Named("Teacher Storage File Name")
     private final String teachersStorageFileName;
 
-    private final String classStorageFileName;
-
+    @Inject
+    @Named("Class Storage File Name")
+    private final  String classStorageFileName;
+    @Inject
     public SerializablePersistenceManager(String classStorageFileName,String teachersStorageFileName) {
         this.teachersStorageFileName = teachersStorageFileName;
         this.classStorageFileName = classStorageFileName;

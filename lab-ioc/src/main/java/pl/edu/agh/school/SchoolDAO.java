@@ -3,6 +3,9 @@ package pl.edu.agh.school;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import pl.edu.agh.guice.SchoolModule;
 import pl.edu.agh.logger.Logger;
 import pl.edu.agh.school.persistence.Assembler;
 import pl.edu.agh.school.persistence.PersistenceConfig;
@@ -20,8 +23,10 @@ public class SchoolDAO {
     private final SerialzablePersistenceInterface manager;
 
     public SchoolDAO() {
-        Assembler assembler=Assembler.createAssembler(new PersistenceConfig());
-        manager = assembler.getInstance(SerialzablePersistenceInterface.class);
+//        Assembler assembler=Assembler.createAssembler(new PersistenceConfig());
+//        manager = assembler.getInstance(SerialzablePersistenceInterface.class);
+        Injector injector= Guice.createInjector(new SchoolModule());
+        manager=injector.getInstance(SerialzablePersistenceInterface.class);
         teachers = manager.loadTeachers();
         classes = manager.loadClasses();
     }
