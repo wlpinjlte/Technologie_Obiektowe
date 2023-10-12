@@ -28,7 +28,7 @@ public class Assembler {
     public <T> T getInstance(Class<T> clazz) {
         // Tutaj możesz dodać kod do tworzenia instancji klasy na podstawie konfiguracji.
         // W tym przypadku użyjemy domyślnego konstruktora.
-        if(clazz==SerializablePersistenceManager.class){
+        if(clazz==SerialzablePersistenceInterface.class){
             try {
                 return (T) new SerializablePersistenceManager(configuration.getClassStorageFileName(), configuration.getTeachersStorageFileName());
             } catch (Exception e) {
