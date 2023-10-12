@@ -7,6 +7,7 @@ import pl.edu.agh.logger.Logger;
 import pl.edu.agh.school.persistence.Assembler;
 import pl.edu.agh.school.persistence.PersistenceConfig;
 import pl.edu.agh.school.persistence.SerializablePersistenceManager;
+import pl.edu.agh.school.persistence.SerialzablePersistenceInterface;
 
 public class SchoolDAO {
 
@@ -16,12 +17,11 @@ public class SchoolDAO {
 
     private final List<SchoolClass> classes;
 
-    private final SerializablePersistenceManager manager;
+    private final SerialzablePersistenceInterface manager;
 
     public SchoolDAO() {
         Assembler assembler=Assembler.createAssembler(new PersistenceConfig());
-        manager = assembler.getInstance(SerializablePersistenceManager.class);
-//        manager=null;
+        manager = assembler.getInstance(SerialzablePersistenceInterface.class);
         teachers = manager.loadTeachers();
         classes = manager.loadClasses();
     }
