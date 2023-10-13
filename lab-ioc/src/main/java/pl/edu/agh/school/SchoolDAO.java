@@ -4,33 +4,28 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import pl.edu.agh.guice.SchoolModule;
 import pl.edu.agh.logger.Logger;
-import pl.edu.agh.school.persistence.Assembler;
-import pl.edu.agh.school.persistence.PersistenceConfig;
-import pl.edu.agh.school.persistence.SerializablePersistenceManager;
 import pl.edu.agh.school.persistence.SerialzablePersistenceInterface;
 
 public class SchoolDAO {
-
-    public static final Logger log = Logger.getInstance();
+    @Inject
+    public final Logger log;
 
     private final List<Teacher> teachers;
 
     private final List<SchoolClass> classes;
-
+    @Inject
     private final SerialzablePersistenceInterface manager;
-
-    public SchoolDAO() {
-//        Assembler assembler=Assembler.createAssembler(new PersistenceConfig());
-//        manager = assembler.getInstance(SerialzablePersistenceInterface.class);
-        Injector injector= Guice.createInjector(new SchoolModule());
-        manager=injector.getInstance(SerialzablePersistenceInterface.class);
-        teachers = manager.loadTeachers();
-        classes = manager.loadClasses();
+    @Inject
+    public SchoolDAO(Logger log,SerialzablePersistenceInterface manager) {
+        this.log=log;
+        this.manager=manager;
+        teachers = this.manager.loadTeachers();
+        classes = this.manager.loadClasses();
     }
-
     public void addTeacher(Teacher teacher) {
         if (!teachers.contains(teacher)) {
             teachers.add(teacher);

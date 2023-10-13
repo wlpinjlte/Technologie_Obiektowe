@@ -5,6 +5,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import pl.edu.agh.guice.SchoolModule;
 import pl.edu.agh.logger.ConsoleMessageSerializer;
 import pl.edu.agh.logger.FileMessageSerializer;
 import pl.edu.agh.logger.Logger;
@@ -22,16 +26,18 @@ public class SchoolDemo {
     private final School school;
 
     private final DateFormat timeFormat = new SimpleDateFormat("hh:mm");
+    private static final Injector injector = Guice.createInjector(new SchoolModule());
 
     public SchoolDemo() {
-        school = new School();
+        school = injector.getInstance(School.class);
     }
 
     public static void main(String[] args) throws Exception {
 
-        Logger.getInstance().registerSerializer(new ConsoleMessageSerializer());
-        Logger.getInstance().registerSerializer(
-                new FileMessageSerializer("logfile.log"));
+        Logger logger=injector.getInstance(Logger.class);
+
+        logger.registerSerializer(new ConsoleMessageSerializer());
+        logger.registerSerializer(injector.getInstance(FileMessageSerializer.class));
 
         SchoolDemo schoolDemo = new SchoolDemo();
         schoolDemo.initTeachers();

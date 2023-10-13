@@ -5,3 +5,6 @@ build/
 classes.dat
 logfile.log
 teachers.dat
+guice-classes.dat
+guice-teachers.dat
+persistence.log
