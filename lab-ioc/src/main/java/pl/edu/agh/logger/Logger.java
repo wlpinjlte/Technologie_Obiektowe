@@ -13,24 +13,20 @@ public class Logger {
     protected static Logger logger;
 
     protected DateFormat dateFormat;
-
+    @Inject
     protected Set<IMessageSerializer> registeredSerializers;
 
     public Logger() {
         init();
         this.registeredSerializers = new HashSet<IMessageSerializer>();
     }
+    @Inject
     public Logger(Set<IMessageSerializer> registeredSerializers) {
         init();
         if (registeredSerializers == null) {
             throw new IllegalArgumentException("null argument");
         }
         this.registeredSerializers = registeredSerializers;
-    }
-    @Inject
-    public Logger(FileMessageSerializer registeredSerializers){
-        this();
-        this.registeredSerializers.add(registeredSerializers);
     }
 
     public static Logger getInstance() {

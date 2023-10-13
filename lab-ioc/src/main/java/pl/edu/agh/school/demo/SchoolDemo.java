@@ -33,12 +33,6 @@ public class SchoolDemo {
     }
 
     public static void main(String[] args) throws Exception {
-
-        Logger logger=injector.getInstance(Logger.class);
-
-        logger.registerSerializer(new ConsoleMessageSerializer());
-//        logger.registerSerializer(injector.getInstance(FileMessageSerializer.class));
-
         SchoolDemo schoolDemo = new SchoolDemo();
         schoolDemo.initTeachers();
         schoolDemo.initClass();
