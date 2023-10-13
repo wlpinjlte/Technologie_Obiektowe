@@ -16,10 +16,16 @@ public class SchoolClass implements Serializable {
 
 	private final List<Student> students = new ArrayList<>();
 	private final List<Subject> subjects = new ArrayList<>();
+	private transient Logger logger=Logger.getInstance();
 
 	public SchoolClass(String name, String profile) {
 		this.name = name;
 		this.profile = profile;
+	}
+	public SchoolClass(String name, String profile,Logger logger) {
+		this.name = name;
+		this.profile = profile;
+		this.logger=logger;
 	}
 
 	public String getName() {
@@ -38,7 +44,7 @@ public class SchoolClass implements Serializable {
 	public void addSubject(Subject subject) {
 		if (!subjects.contains(subject)) {
 			subjects.add(subject);
-			Logger.getInstance().log(
+			logger.log(
 					"Added " + subject.toString() + " to " + this.toString());
 		}
 	}
@@ -51,7 +57,7 @@ public class SchoolClass implements Serializable {
 		if (!students.contains(student)) {
 			students.add(student);
 			student.setSchoolClass(this);
-			Logger.getInstance().log(
+			logger.log(
 					"Added " + student.toString() + " to class "
 							+ this.toString());
 		}

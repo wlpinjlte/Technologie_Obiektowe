@@ -8,6 +8,8 @@ import java.util.Collection;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import pl.edu.agh.factories.SchoolClassFactory;
+import pl.edu.agh.factories.SubjectFactory;
 import pl.edu.agh.guice.SchoolModule;
 import pl.edu.agh.logger.ConsoleMessageSerializer;
 import pl.edu.agh.logger.FileMessageSerializer;
@@ -55,14 +57,18 @@ public class SchoolDemo {
 
     public void initClass() throws ParseException {
         if (school.findClass("1A", "humane").isEmpty()) {
-            SchoolClass schoolClass = new SchoolClass("1A", "humane");
+            SchoolClassFactory schoolClassFactory=injector.getInstance(SchoolClassFactory.class);
+            SubjectFactory subjectFactory=injector.getInstance(SubjectFactory.class);
+
+
+            SchoolClass schoolClass = schoolClassFactory.create("1A", "humane");
             schoolClass.addStudent(new Student("Peter", "Pan"));
             schoolClass.addStudent(new Student("Anna", "Shirley"));
             schoolClass.addStudent(new Student("Harry", "Potter"));
             schoolClass.addStudent(new Student("Ron", "Weasley"));
 
             Subject subject;
-            subject = new Subject("Math");
+            subject = subjectFactory.create("Math");
             subject.addTerm(new Term(DayOfWeek.MONDAY, timeFormat
                     .parse("10:30"), 45));
             subject.addTerm(new Term(DayOfWeek.THURSDAY, timeFormat
@@ -71,7 +77,7 @@ public class SchoolDemo {
                     .findPerson("Thomas", "Anderson").iterator().next());
             schoolClass.addSubject(subject);
 
-            subject = new Subject("English");
+            subject = subjectFactory.create("English");
             subject.addTerm(new Term(DayOfWeek.MONDAY, timeFormat
                     .parse("12:00"), 45));
             subject.addTerm(new Term(DayOfWeek.TUESDAY, timeFormat
@@ -84,28 +90,28 @@ public class SchoolDemo {
                     .iterator().next());
             schoolClass.addSubject(subject);
 
-            subject = new Subject("Computer Science");
+            subject = subjectFactory.create("Computer Science");
             subject.addTerm(new Term(DayOfWeek.TUESDAY, timeFormat
                     .parse("09:00"), 45));
             subject.setTeacher((Teacher) school
                     .findPerson("Thomas", "Anderson").iterator().next());
             schoolClass.addSubject(subject);
 
-            subject = new Subject("Chemistry");
+            subject = subjectFactory.create("Chemistry");
             subject.addTerm(new Term(DayOfWeek.WEDNESDAY, timeFormat
                     .parse("11:30"), 45));
             subject.setTeacher((Teacher) school.findPerson("Princess", "Leia")
                     .iterator().next());
             schoolClass.addSubject(subject);
 
-            subject = new Subject("Potions");
+            subject = subjectFactory.create("Potions");
             subject.addTerm(new Term(DayOfWeek.FRIDAY, timeFormat
                     .parse("09:00"), 90));
             subject.setTeacher((Teacher) school.findPerson("Severus", "Snape")
                     .iterator().next());
             schoolClass.addSubject(subject);
 
-            subject = new Subject("Black Magic Defense");
+            subject = subjectFactory.create("Black Magic Defense");
             subject.addTerm(new Term(DayOfWeek.FRIDAY, timeFormat
                     .parse("12:30"), 90));
             subject.setTeacher((Teacher) school.findPerson("Dolores",

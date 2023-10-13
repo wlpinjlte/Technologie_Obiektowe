@@ -18,13 +18,16 @@ public class Subject implements Serializable {
 	private final List<Mark> marks = new ArrayList<>();
 	private final List<Mark> semesterMarks = new ArrayList<>();
 	private final List<Lesson> lessons = new ArrayList<>();
-
+	private transient Logger logger=Logger.getInstance();
 	private Teacher _teacher;
 
 	public Subject(String name) {
 		this.name = name;
 	}
-
+	public Subject(String name,Logger logger) {
+		this.name = name;
+		this.logger=logger;
+	}
 	public String getName() {
 		return name;
 	}
@@ -33,7 +36,7 @@ public class Subject implements Serializable {
 		if (!terms.contains(newTerm)) {
 			terms.add(newTerm);
 			newTerm.setSubject(this);
-			Logger.getInstance().log(
+			logger.log(
 					"Added " + newTerm.toString() + " to " + toString());
 		}
 	}
