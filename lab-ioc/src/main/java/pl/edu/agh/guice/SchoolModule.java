@@ -23,13 +23,4 @@ public class SchoolModule extends AbstractModule {
     SerialzablePersistenceInterface providePersistenceManager(SerializablePersistenceManager manager){
         return manager;
     }
-//    @Provides
-//    FileMessageSerializer provideFileMessageSerializer(FileMessageSerializer serializer){
-//        return serializer;
-//    }
-//    @Provides
-//    @Singleton
-//    Logger provideLogger(Logger logger){
-//        return logger;
-//    }
 }

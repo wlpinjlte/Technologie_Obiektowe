@@ -37,7 +37,7 @@ public class SchoolDemo {
         Logger logger=injector.getInstance(Logger.class);
 
         logger.registerSerializer(new ConsoleMessageSerializer());
-        logger.registerSerializer(injector.getInstance(FileMessageSerializer.class));
+//        logger.registerSerializer(injector.getInstance(FileMessageSerializer.class));
 
         SchoolDemo schoolDemo = new SchoolDemo();
         schoolDemo.initTeachers();

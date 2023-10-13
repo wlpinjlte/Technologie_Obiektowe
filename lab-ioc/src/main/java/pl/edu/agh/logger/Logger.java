@@ -27,6 +27,11 @@ public class Logger {
         }
         this.registeredSerializers = registeredSerializers;
     }
+    @Inject
+    public Logger(FileMessageSerializer registeredSerializers){
+        this();
+        this.registeredSerializers.add(registeredSerializers);
+    }
 
     public static Logger getInstance() {
         if (logger == null)
