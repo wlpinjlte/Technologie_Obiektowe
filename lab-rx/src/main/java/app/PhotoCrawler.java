@@ -1,6 +1,10 @@
 package app;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import model.Photo;
 import util.PhotoDownloader;
 import util.PhotoProcessor;
@@ -42,10 +46,25 @@ public class PhotoCrawler {
 
     public void downloadPhotosForQuery(String query) throws IOException, InterruptedException {
         Observable<Photo> observable=photoDownloader.searchForPhotos(query);
-        observable.subscribe(photoSerializer::savePhoto);
+        observable
+                .doOnError(error -> {
+                    // Tutaj możesz obsłużyć błąd, jeśli to konieczne
+                    // Na przykład, zalogować go
+                    System.err.println("Błąd podczas pobierania zdjęć: " + error.getMessage());
+                })
+                .subscribe(photoSerializer::savePhoto);
     }
 
-    public void downloadPhotosForMultipleQueries(List<String> queries) {
-        // TODO Implement me :(
+    public void downloadPhotosForMultipleQueries(List<String> queries) throws IOException, InterruptedException {
+        Observable<Photo> observable=photoDownloader.searchForPhotos(queries);
+        observable
+                .onErrorResumeNext(error -> {
+                    // Tutaj możesz obsłużyć błąd, na przykład zalogować go
+                    System.err.println("Błąd podczas pobierania zdjęć: " + error.getMessage());
+
+                    // Zwracamy nowy obserwator lub inny obserwowalny
+                    return Observable.empty();
+                })
+                .subscribe(photoSerializer::savePhoto); 
     }
 }

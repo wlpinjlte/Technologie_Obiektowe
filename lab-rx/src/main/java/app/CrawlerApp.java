@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class CrawlerApp {
 
     public static final String SCRAPER_API_KEY = "53ef2c077c666bd19571067e299b097d";
@@ -15,7 +17,8 @@ public class CrawlerApp {
         PhotoCrawler photoCrawler = new PhotoCrawler();
         photoCrawler.resetLibrary();
 //        photoCrawler.downloadPhotoExamples();
-        photoCrawler.downloadPhotosForQuery(TOPICS.get(0));
-//        photoCrawler.downloadPhotosForMultipleQueries(TOPICS);
+//        photoCrawler.downloadPhotosForQuery(TOPICS.get(0));
+        photoCrawler.downloadPhotosForMultipleQueries(TOPICS);
+        Thread.sleep(100_000);
     }
 }

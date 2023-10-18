@@ -1,7 +1,9 @@
 package util;
 
 import driver.DuckDuckGoDriver;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import model.Photo;
 import org.apache.tika.Tika;
 
@@ -11,10 +13,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PhotoDownloader {
@@ -30,9 +29,9 @@ public class PhotoDownloader {
     }
 
     public Observable<Photo> searchForPhotos(String searchQuery) throws IOException, InterruptedException {
+        List<String> photoUrls = DuckDuckGoDriver.searchForImages(searchQuery);
         return Observable.create(observer -> {
             try {
-                List<String> photoUrls = DuckDuckGoDriver.searchForImages(searchQuery);
                 for (String photoUrl : photoUrls) {
                     if(observer.isDisposed()){
                         break;
@@ -41,11 +40,21 @@ public class PhotoDownloader {
                 }
                 observer.onComplete();
             } catch (IOException e) {
-                observer.onError(e);
+//                observer.onError(e);
+                System.out.println(e);
             }
         });
     }
 
+    public Observable<Photo> searchForPhotos(List<String> searchQueries){
+        return Observable.create(observer->{
+                for (String searchQuery : searchQueries) {
+                    observer.onNext(searchQuery);
+                }
+                observer.onComplete();
+        }).flatMap(searchQuery->searchForPhotos((String) searchQuery))
+                .subscribeOn(Schedulers.io());
+    }
     private Photo getPhoto(String photoUrl) throws IOException {
         log.info("Downloading... " + photoUrl);
         byte[] photoData = downloadPhoto(photoUrl);
