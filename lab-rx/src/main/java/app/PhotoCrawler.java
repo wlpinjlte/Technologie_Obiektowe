@@ -38,7 +38,9 @@ public class PhotoCrawler {
     public void downloadPhotoExamples() {
         try {
             Observable<Photo> downloadedExamples = photoDownloader.getPhotoExamples();
-            downloadedExamples.subscribe(photoSerializer::savePhoto);
+            downloadedExamples
+                    .compose(this::processPhotos)
+                    .subscribe(photoSerializer::savePhoto);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Downloading photo examples error", e);
         }
@@ -52,6 +54,7 @@ public class PhotoCrawler {
                     // Na przykład, zalogować go
                     System.err.println("Błąd podczas pobierania zdjęć: " + error.getMessage());
                 })
+                .compose(this::processPhotos)
                 .subscribe(photoSerializer::savePhoto);
     }
 
@@ -65,6 +68,10 @@ public class PhotoCrawler {
                     // Zwracamy nowy obserwator lub inny obserwowalny
                     return Observable.empty();
                 })
-                .subscribe(photoSerializer::savePhoto); 
+                .compose(this::processPhotos)
+                .subscribe(photoSerializer::savePhoto);
+    }
+    public Observable<Photo> processPhotos(Observable<Photo> photoObservable){
+        return photoObservable.filter(photoProcessor::isPhotoValid).map(photoProcessor::convertToMiniature);
     }
 }
