@@ -6,12 +6,14 @@ import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import model.Photo;
+import model.PhotoSize;
 import util.PhotoDownloader;
 import util.PhotoProcessor;
 import util.PhotoSerializer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,8 +56,25 @@ public class PhotoCrawler {
                     // Na przykład, zalogować go
                     System.err.println("Błąd podczas pobierania zdjęć: " + error.getMessage());
                 })
-                .compose(this::processPhotos)
-                .subscribe(photoSerializer::savePhoto);
+                .groupBy(PhotoSize::resolve)
+                .subscribe(photoSizePhotoGroupedObservable -> {
+                    if(photoSizePhotoGroupedObservable.getKey().equals(PhotoSize.SMALL)){
+                        photoSizePhotoGroupedObservable.ignoreElements().subscribe();
+                    }else if(photoSizePhotoGroupedObservable.getKey().equals(PhotoSize.MEDIUM)){
+                        photoSizePhotoGroupedObservable.buffer(5, 5, TimeUnit.SECONDS)
+                                .observeOn(Schedulers.io())
+                                .subscribe(bufferedPhotos->{
+                                    for(Photo photo:bufferedPhotos){
+                                        photoSerializer.savePhoto(photo);
+                                    }
+                                });
+                    }else{
+                        photoSizePhotoGroupedObservable
+                                .observeOn(Schedulers.computation())
+                                .map(photoProcessor::convertToMiniature)
+                                .subscribe(photoSerializer::savePhoto);
+                    }
+                });
     }
 
     public void downloadPhotosForMultipleQueries(List<String> queries) throws IOException, InterruptedException {
@@ -68,8 +87,25 @@ public class PhotoCrawler {
                     // Zwracamy nowy obserwator lub inny obserwowalny
                     return Observable.empty();
                 })
-                .compose(this::processPhotos)
-                .subscribe(photoSerializer::savePhoto);
+                .groupBy(PhotoSize::resolve)
+                .subscribe(photoSizePhotoGroupedObservable -> {
+                    if(photoSizePhotoGroupedObservable.getKey().equals(PhotoSize.SMALL)){
+                        photoSizePhotoGroupedObservable.ignoreElements().subscribe();
+                    }else if(photoSizePhotoGroupedObservable.getKey().equals(PhotoSize.MEDIUM)){
+                        photoSizePhotoGroupedObservable.buffer(5, 5, TimeUnit.SECONDS)
+                                .observeOn(Schedulers.io())
+                                .subscribe(bufferedPhotos->{
+                                    for(Photo photo:bufferedPhotos){
+                                        photoSerializer.savePhoto(photo);
+                                    }
+                                });
+                    }else{
+                        photoSizePhotoGroupedObservable
+                                .observeOn(Schedulers.computation())
+                                .map(photoProcessor::convertToMiniature)
+                                .subscribe(photoSerializer::savePhoto);
+                    }
+                });
     }
     public Observable<Photo> processPhotos(Observable<Photo> photoObservable){
         return photoObservable.filter(photoProcessor::isPhotoValid).map(photoProcessor::convertToMiniature);
