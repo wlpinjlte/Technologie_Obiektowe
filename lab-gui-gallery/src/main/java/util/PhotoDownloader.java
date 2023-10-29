@@ -2,9 +2,11 @@ package util;
 
 import driver.DuckDuckGoDriver;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import model.Photo;
 import org.apache.tika.Tika;
+import org.pdfsam.rxjavafx.schedulers.JavaFxScheduler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,7 +42,8 @@ public class PhotoDownloader {
                                     return Observable.empty();
                                 })
 //                         Uncomment line below to download each photo in separate thread
-//                        .subscribeOn(Schedulers.computation())
+                        .subscribeOn(Schedulers.computation())
+                                .observeOn(JavaFxScheduler.platform())
                 );
     }
 
