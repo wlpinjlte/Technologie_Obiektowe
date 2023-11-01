@@ -2,7 +2,11 @@ package controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
+import command.AddTransactionCommand;
+import command.RemoveTransactionsCommand;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -93,10 +97,9 @@ public class AccountOverviewController {
 
 	@FXML
 	private void handleDeleteAction(ActionEvent event) {
-		for (Transaction transaction : transactionsTable.getSelectionModel()
-				.getSelectedItems()) {
-			data.removeTransaction(transaction);
-		}
+		RemoveTransactionsCommand removeTransactionsCommand=new RemoveTransactionsCommand(data,new ArrayList<>(transactionsTable.getSelectionModel()
+				.getSelectedItems()));
+		commandRegistry.executeCommand(removeTransactionsCommand);
 	}
 
 	@FXML
@@ -113,7 +116,8 @@ public class AccountOverviewController {
 		Transaction transaction = Transaction.newTransaction();
 
 		if (appController.showTransactionEditDialog(transaction)) {
-			data.addTransaction(transaction);
+			AddTransactionCommand addTransactionCommand = new AddTransactionCommand(transaction, data);
+			commandRegistry.executeCommand(addTransactionCommand);
 		}
 	}
 
