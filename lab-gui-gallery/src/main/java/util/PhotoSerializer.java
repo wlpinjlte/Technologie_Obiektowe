@@ -7,6 +7,10 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 
 import model.Gallery;
@@ -26,6 +30,26 @@ public class PhotoSerializer {
 
     public void registerGallery(Gallery gallery) {
         // TODO model <-> serializer bindings configuration
+        gallery.getPhotos().addListener((ListChangeListener<? super Photo>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(element->{
+                        Observable.just(element)
+                                .observeOn(Schedulers.io()) // Przetwarzanie na oddzielnym wątku
+                                .subscribe(item -> {
+                                    Platform.runLater(() -> {
+                                        savePhoto(element);
+                                    });
+                                });
+                        element.nameProperty().addListener((observable, oldValue, newValue) -> {
+                            renamePhoto(oldValue, newValue);
+                        });
+                    });
+                } else if (change.wasRemoved()) {
+                    change.getRemoved().forEach(this::removePhoto);
+                }
+            }
+        });
     }
 
     private void createLibraryDirectory() throws IOException {
@@ -54,6 +78,7 @@ public class PhotoSerializer {
     }
 
     public void removePhoto(Photo photo) {
+        log.info("REMOVE photo: " + photo.getName());
         var photoFile = new File(getPhotoPath(photo));
         photoFile.delete();
     }
