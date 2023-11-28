@@ -12,9 +12,8 @@ import pl.edu.agh.to.school.Student.Student;
 import pl.edu.agh.to.school.Student.StudentRepository;
 
 import java.time.LocalDate;
-
 @Configuration
-public class Configurator {
+public class Configurator{
     @Bean
     CommandLineRunner commandLineRunner(StudentRepository studentRepository, GradeRepository gradeRepository, CourseRepository courseRepository) {
         return args -> {
