@@ -13,6 +13,11 @@ public class Student {
     @GeneratedValue
     private int id;
     private String firstName;
+
+    public int getId() {
+        return id;
+    }
+
     private String lastName;
     private LocalDate birthDate;
     private int indexNumber;

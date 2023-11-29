@@ -6,9 +6,11 @@ import pl.edu.agh.to.school.Course.CourseRepository;
 import pl.edu.agh.to.school.Grade.Grade;
 import pl.edu.agh.to.school.Grade.GradeRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
