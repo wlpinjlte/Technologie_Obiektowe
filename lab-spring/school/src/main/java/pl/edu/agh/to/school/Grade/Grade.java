@@ -18,6 +18,14 @@ public class Grade {
     private int gradeValue;
     public Grade(){}
 
+    public Course getCourse() {
+        return course;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
     public int getGradeValue() {
         return gradeValue;
     }
